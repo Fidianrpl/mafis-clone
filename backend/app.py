@@ -4,6 +4,10 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
+@app.route("/")
+def home():
+    return {"mensaje": "Backend funcionando"}
+
 # ---------- REGISTRO DE BLUEPRINTS ----------
 from auth import bp as auth_bp
 from activos import bp as activos_bp
