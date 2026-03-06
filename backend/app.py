@@ -1,10 +1,10 @@
 from flask import Flask
 from flask_cors import CORS
+import os   # ➕ necesario para leer el puerto de Render
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
-# ---------- RUTA DE PRUEBA ----------
 @app.route("/")
 def home():
     return {"mensaje": "Backend funcionando"}
@@ -22,6 +22,7 @@ app.register_blueprint(reportes_bp)
 app.register_blueprint(usuarios_bp)
 app.register_blueprint(ordenes_bp)
 
-# ---------- PARA EJECUCIÓN LOCAL ----------
+# 🔧 IMPORTANTE para entornos como Render
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
