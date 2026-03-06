@@ -2,8 +2,9 @@ from flask import Flask
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app)
 
+# ---------- RUTA DE PRUEBA ----------
 @app.route("/")
 def home():
     return {"mensaje": "Backend funcionando"}
@@ -21,5 +22,6 @@ app.register_blueprint(reportes_bp)
 app.register_blueprint(usuarios_bp)
 app.register_blueprint(ordenes_bp)
 
-if __name__ == '__main__':
-    app.run()
+# ---------- PARA EJECUCIÓN LOCAL ----------
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
