@@ -1,10 +1,18 @@
 from flask import Blueprint, jsonify, request
 import pymysql
+import os
 
 bp = Blueprint('activos', __name__, url_prefix='/api')
 
 def get_connection():
-    return pymysql.connect(host='localhost', user='root', password='1234', database='activos', charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor)
+    return pymysql.connect(
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME"),
+        charset='utf8mb4',
+        cursorclass=pymysql.cursors.DictCursor
+    )
 
 @bp.route('/activos')
 def get_activos():
