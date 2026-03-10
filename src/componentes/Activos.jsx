@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import API from "../api";
 
 export default function Activos() {
   const [datos, setDatos] = useState([]);
@@ -10,10 +11,14 @@ export default function Activos() {
     estado: "Activo",
   });
 
+  const cargarActivos = async () => {
+    const res = await fetch(`${API}/api/activos`);
+    const data = await res.json();
+    setDatos(data);
+  };
+
   useEffect(() => {
-    fetch("http://localhost:5000/api/activos")
-      .then((res) => res.json())
-      .then((data) => setDatos(data));
+    cargarActivos();
   }, []);
 
   const nuevo = () => {
@@ -29,33 +34,35 @@ export default function Activos() {
   const guardar = async () => {
     if (!form.nombreActivo || !form.ubicacion)
       return alert("Completa los campos");
+
     const url = form.id
-      ? `http://localhost:5000/api/activos/${form.id}`
-      : "http://localhost:5000/api/activos";
+      ? `${API}/api/activos/${form.id}`
+      : `${API}/api/activos`;
+
     const method = form.id ? "PUT" : "POST";
+
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
+
     if (!res.ok) return alert("Error al guardar");
-    const nueva = await fetch("http://localhost:5000/api/activos").then((r) =>
-      r.json()
-    );
-    setDatos(nueva);
+
+    await cargarActivos();
     setMostrarForm(false);
   };
 
   const borrar = async (id) => {
     if (!window.confirm("¿Confirma eliminar este activo?")) return;
-    const res = await fetch(`http://localhost:5000/api/activos/${id}`, {
+
+    const res = await fetch(`${API}/api/activos/${id}`, {
       method: "DELETE",
     });
+
     if (!res.ok) return alert("Error al borrar");
-    const nueva = await fetch("http://localhost:5000/api/activos").then((r) =>
-      r.json()
-    );
-    setDatos(nueva);
+
+    await cargarActivos();
   };
 
   return (
@@ -69,6 +76,7 @@ export default function Activos() {
         <div className="card mb-3">
           <div className="card-body">
             <h5>{form.id ? "Editar activo" : "Crear activo"}</h5>
+
             <input
               className="form-control mb-2"
               placeholder="Nombre"
@@ -77,12 +85,14 @@ export default function Activos() {
                 setForm({ ...form, nombreActivo: e.target.value })
               }
             />
+
             <input
               className="form-control mb-2"
               placeholder="Ubicación"
               value={form.ubicacion}
               onChange={(e) => setForm({ ...form, ubicacion: e.target.value })}
             />
+
             <select
               className="form-select mb-2"
               value={form.estado}
@@ -91,9 +101,11 @@ export default function Activos() {
               <option>Activo</option>
               <option>Inactivo</option>
             </select>
+
             <button className="btn btn-success btn-sm me-2" onClick={guardar}>
               Guardar
             </button>
+
             <button
               className="btn btn-secondary btn-sm"
               onClick={() => setMostrarForm(false)}
@@ -114,6 +126,7 @@ export default function Activos() {
             <th className="text-center">Acciones</th>
           </tr>
         </thead>
+
         <tbody>
           {datos.map((item) => (
             <tr key={item.id}>
@@ -121,6 +134,7 @@ export default function Activos() {
               <td>{item.nombreActivo}</td>
               <td>{item.ubicacion}</td>
               <td>{item.estado}</td>
+
               <td className="text-center">
                 <button
                   className="btn btn-sm btn-outline-warning me-2"
@@ -128,6 +142,7 @@ export default function Activos() {
                 >
                   Editar
                 </button>
+
                 <button
                   className="btn btn-sm btn-outline-danger"
                   onClick={() => borrar(item.id)}
